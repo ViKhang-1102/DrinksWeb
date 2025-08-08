@@ -1,31 +1,24 @@
-
 <?php
 require_once dirname(__DIR__, 2) . '/config/database.php';
 
-// Xử lý cập nhật tax_fee mặc định
 $default_tax_fee_file = dirname(__FILE__) . '/default_tax_fee.txt';
 $new_tax_fee = null;
 if (isset($_POST['set_tax_fee'])) {
     $new_tax_fee = floatval($_POST['default_tax_fee']);
     file_put_contents($default_tax_fee_file, $new_tax_fee);
-    // Cập nhật tax_fee và total cho tất cả đơn hàng
     $stmt = $pdo->prepare('UPDATE orders SET tax_fee = ?, total = subtotal + ?');
     $stmt->execute([$new_tax_fee, $new_tax_fee]);
 }
 $default_tax_fee = file_exists($default_tax_fee_file) ? file_get_contents($default_tax_fee_file) : 0;
 
-// Xử lý xóa đơn hàng
 if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
     $order_id = intval($_GET['delete']);
-    // Xóa order_details trước
     $pdo->prepare('DELETE FROM order_details WHERE order_id = ?')->execute([$order_id]);
-    // Xóa order
     $pdo->prepare('DELETE FROM orders WHERE id = ?')->execute([$order_id]);
     header('Location: index.php');
     exit;
 }
 
-// Lấy danh sách đơn hàng
 $orders = $pdo->query('SELECT * FROM orders ORDER BY created_at DESC')->fetchAll();
 
 include '../admin_header.php';
@@ -33,7 +26,6 @@ include '../admin_header.php';
 <div class="container-fluid">
     <h1 class="h3 mb-4 text-gray-800">Manage Orders</h1>
 
-    <!-- Form thiết lập tax_fee mặc định -->
     <form method="post" class="mb-4">
         <div class="form-row align-items-center">
             <div class="col-auto">

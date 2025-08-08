@@ -1,14 +1,12 @@
 <?php
 require_once dirname(__DIR__, 2) . '/config/database.php';
 
-// Lấy ID đơn hàng
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     header('Location: index.php');
     exit;
 }
 $order_id = intval($_GET['id']);
 
-// Lấy thông tin đơn hàng
 $stmt = $pdo->prepare('SELECT * FROM orders WHERE id = ?');
 $stmt->execute([$order_id]);
 $order = $stmt->fetch();
@@ -17,12 +15,10 @@ if (!$order) {
     exit;
 }
 
-// Xử lý cập nhật đơn hàng
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $status = $_POST['status'] ?? $order['status'];
     $note = $_POST['note'] ?? $order['note'];
     $tax_fee = isset($_POST['tax_fee']) ? floatval($_POST['tax_fee']) : $order['tax_fee'];
-    // Cập nhật lại total nếu tax_fee thay đổi
     $total = $order['subtotal'] + $tax_fee;
     $stmt = $pdo->prepare('UPDATE orders SET status = ?, note = ?, tax_fee = ?, total = ? WHERE id = ?');
     $stmt->execute([$status, $note, $tax_fee, $total, $order_id]);

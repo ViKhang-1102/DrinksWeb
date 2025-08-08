@@ -8,6 +8,20 @@ if ($user_id === 0) {
     exit;
 }
 
+// Handle update default info
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_default_info'])) {
+    $phone = trim($_POST['default_phone'] ?? '');
+    $address = trim($_POST['default_address'] ?? '');
+    $stmt = $pdo->prepare('UPDATE users SET phone = ?, address = ? WHERE id = ?');
+    $stmt->execute([$phone, $address, $user_id]);
+    $_SESSION['profile_success'] = 'Cập nhật thông tin mặc định thành công!';
+}
+
+// Lấy thông tin user
+$user_stmt = $pdo->prepare('SELECT phone, address FROM users WHERE id = ?');
+$user_stmt->execute([$user_id]);
+$user = $user_stmt->fetch();
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
     $stmt = $pdo->prepare('SELECT c.product_id, c.quantity, p.price FROM carts c JOIN products p ON c.product_id = p.id WHERE c.user_id = ?');
     $stmt->execute([$user_id]);
@@ -25,8 +39,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
         $total = $subtotal + $default_tax_fee;
         $order_code = 'ORD-' . date('YmdHis') . '-' . substr(md5(uniqid()), 0, 5);
         $now = date('Y-m-d H:i:s');
-        $stmt = $pdo->prepare('INSERT INTO orders (user_id, order_code, status, subtotal, tax_fee, total, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
-        $stmt->execute([$user_id, $order_code, 'pending', $subtotal, $default_tax_fee, $total, $now, $now]);
+        // Lấy phone và address từ users
+        $userInfo = $pdo->prepare('SELECT phone, address FROM users WHERE id = ?');
+        $userInfo->execute([$user_id]);
+        $userRow = $userInfo->fetch();
+        $phone = $userRow['phone'] ?? '';
+        $address = $userRow['address'] ?? '';
+        $stmt = $pdo->prepare('INSERT INTO orders (user_id, order_code, status, subtotal, tax_fee, total, created_at, updated_at, phone, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+        $stmt->execute([$user_id, $order_code, 'pending', $subtotal, $default_tax_fee, $total, $now, $now, $phone, $address]);
         $order_id = $pdo->lastInsertId();
         $stmt = $pdo->prepare('INSERT INTO order_details (order_id, product_id, price, quantity) VALUES (?, ?, ?, ?)');
         foreach ($cart as $item) {
@@ -64,9 +84,31 @@ $stmt = $pdo->prepare('SELECT * FROM orders WHERE user_id = ? ORDER BY created_a
 $stmt->execute([$user_id]);
 $orders = $stmt->fetchAll();
 
+
 include 'header.php';
 ?>
-<div class="container py-5" style="margin-top: 90px;">
+<div class="container py-4" style="margin-top: 90px;">
+    <div class="card mb-4">
+        <div class="card-header fw-bold">Set up phone number and address for the order</div>
+        <div class="card-body">
+            <?php if (!empty($_SESSION['profile_success'])): ?>
+                <div class="alert alert-success"> <?= $_SESSION['profile_success']; unset($_SESSION['profile_success']); ?> </div>
+            <?php endif; ?>
+            <form method="post" class="row g-3">
+                <div class="col-md-6">
+                    <label for="default_phone" class="form-label">Phone</label>
+                    <input type="text" class="form-control" id="default_phone" name="default_phone" value="<?= htmlspecialchars($user['phone'] ?? '') ?>" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="default_address" class="form-label"><Address></Address></label>
+                    <input type="text" class="form-control" id="default_address" name="default_address" value="<?= htmlspecialchars($user['address'] ?? '') ?>" required>
+                </div>
+                <div class="col-12">
+                    <button type="submit" name="update_default_info" class="btn btn-primary">Save information</button>
+                </div>
+            </form>
+        </div>
+    </div>
     <h2 class="mb-4">My Orders</h2>
     <?php if (empty($orders)): ?>
         <div class="alert alert-info">You have no orders yet.</div>

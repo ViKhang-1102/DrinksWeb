@@ -52,9 +52,12 @@ if (session_status() === PHP_SESSION_NONE) session_start();
                                 href="categories.php?category_id=<?= $cat['id'] ?>"><?= htmlspecialchars($cat['name']) ?></a>
                         </li>
                         <?php endforeach; ?>
+                         <li class="nav-item">
+                        <a class="nav-link" href="orders.php">Orders</a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" href="contact-us.php">Contact</a>
-                        </li>
+                        </li>                        
                     </ul>
                 </div>
             </div>
@@ -75,9 +78,7 @@ if (session_status() === PHP_SESSION_NONE) session_start();
                     </a>
                 </li>
                 <?php if (!empty($_SESSION['user_id'])): ?>
-                <li class="nav-item">
-                    <a class="nav-link" href="orders.php">Orders</a>
-                </li>
+               
                 <li class="nav-item">
                     <a class="nav-link" href="account-profile.php">My Profile</a>
                 </li>

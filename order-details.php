@@ -42,6 +42,8 @@ include 'header.php';
                 <li class="list-group-item"><strong>Subtotal:</strong> <?= number_format($order['subtotal'], 0, ',', '.') ?>₫</li>
                 <li class="list-group-item"><strong>Tax Fee:</strong> <?= number_format($order['tax_fee'], 0, ',', '.') ?>₫</li>
                 <li class="list-group-item"><strong>Total:</strong> <?= number_format($order['total'], 0, ',', '.') ?>₫</li>
+                <li class="list-group-item"><strong>Phone:</strong> <?= htmlspecialchars($order['phone'] ?? '') ?></li>
+                <li class="list-group-item"><strong>Address:</strong> <?= htmlspecialchars($order['address'] ?? '') ?></li>
                 <li class="list-group-item"><strong>Note:</strong> <?= nl2br(htmlspecialchars($order['note'])) ?></li>
                 <li class="list-group-item"><strong>Created At:</strong> <?= $order['created_at'] ?></li>
             </ul>

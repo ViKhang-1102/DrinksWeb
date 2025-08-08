@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 08, 2025 at 03:46 AM
+-- Generation Time: Aug 08, 2025 at 06:05 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -34,14 +34,6 @@ CREATE TABLE `carts` (
   `quantity` int(11) NOT NULL DEFAULT 1,
   `added_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `carts`
---
-
-INSERT INTO `carts` (`id`, `user_id`, `product_id`, `quantity`, `added_at`) VALUES
-(31, 2, 10, 1, '2025-08-08 08:43:13'),
-(32, 2, 11, 1, '2025-08-08 08:43:16');
 
 -- --------------------------------------------------------
 
@@ -79,16 +71,18 @@ CREATE TABLE `orders` (
   `tax_fee` decimal(10,2) DEFAULT NULL,
   `total` decimal(10,2) DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
-  `updated_at` datetime DEFAULT NULL
+  `updated_at` datetime DEFAULT NULL,
+  `phone` varchar(50) DEFAULT NULL,
+  `address` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `orders`
 --
 
-INSERT INTO `orders` (`id`, `user_id`, `order_code`, `note`, `status`, `subtotal`, `tax_fee`, `total`, `created_at`, `updated_at`) VALUES
-(8, 2, 'ORD-20250808033214-63904', NULL, 'pending', 70.00, 5.00, 75.00, '2025-08-08 03:32:14', '2025-08-08 03:32:14'),
-(10, 2, 'ORD-20250808033530-71800', NULL, 'pending', 15.00, 5.00, 20.00, '2025-08-08 03:35:30', '2025-08-08 03:35:30');
+INSERT INTO `orders` (`id`, `user_id`, `order_code`, `note`, `status`, `subtotal`, `tax_fee`, `total`, `created_at`, `updated_at`, `phone`, `address`) VALUES
+(11, 2, 'ORD-20250808053852-4e50e', 'My first order from my website', 'processing', 50.00, 5.00, 55.00, '2025-08-08 05:38:52', '2025-08-08 05:38:52', '12345678910', 'Can Tho'),
+(13, 2, 'ORD-20250808054443-b5e0d', NULL, 'pending', 80.00, 5.00, 85.00, '2025-08-08 05:44:43', '2025-08-08 05:44:43', '12345678910', 'Can Tho');
 
 -- --------------------------------------------------------
 
@@ -110,9 +104,10 @@ CREATE TABLE `order_details` (
 --
 
 INSERT INTO `order_details` (`id`, `order_id`, `product_id`, `price`, `quantity`, `subtotal`) VALUES
-(27, 8, 10, 15.00, 2, NULL),
-(28, 8, 11, 20.00, 2, NULL),
-(30, 10, 10, 15.00, 1, NULL);
+(31, 11, 10, 15.00, 2, 30.00),
+(32, 11, 11, 20.00, 1, 20.00),
+(35, 13, 11, 20.00, 2, 40.00),
+(36, 13, 7, 20.00, 2, 40.00);
 
 -- --------------------------------------------------------
 
@@ -201,7 +196,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `name`, `email`, `phone`, `password`, `role`, `address`) VALUES
 (1, 'admin', 'admin@gmail.com', '123456789', '$2y$10$rAMrJVQJyLHEViiHJaTQfui6j2k6wEM/9vrz6D0WepIbGkhwveKcG', 'admin', NULL),
-(2, 'user', 'user@gmail.com', '12345678910', '$2y$10$LKB2zEvYdc4ejqNoTgovN.YxGrDiNTVhfn6ECtZbSYdwT.qg3.XKe', 'user', NULL);
+(2, 'user', 'user@gmail.com', '12345678910', '$2y$10$LKB2zEvYdc4ejqNoTgovN.YxGrDiNTVhfn6ECtZbSYdwT.qg3.XKe', 'user', 'Can Tho');
 
 --
 -- Indexes for dumped tables
@@ -264,7 +259,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `carts`
 --
 ALTER TABLE `carts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -276,13 +271,13 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `order_details`
 --
 ALTER TABLE `order_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT for table `products`

@@ -1,14 +1,12 @@
 <?php
 require_once dirname(__DIR__, 2) . '/config/database.php';
 
-// Lấy ID đơn hàng
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     header('Location: index.php');
     exit;
 }
 $order_id = intval($_GET['id']);
 
-// Lấy thông tin đơn hàng
 $stmt = $pdo->prepare('SELECT * FROM orders WHERE id = ?');
 $stmt->execute([$order_id]);
 $order = $stmt->fetch();
@@ -17,7 +15,6 @@ if (!$order) {
     exit;
 }
 
-// Lấy chi tiết sản phẩm trong đơn hàng
 $sql = 'SELECT od.*, p.name as product_name FROM order_details od 
         JOIN products p ON od.product_id = p.id WHERE od.order_id = ?';
 $stmt = $pdo->prepare($sql);
@@ -38,6 +35,8 @@ include '../admin_header.php';
                 <li class="list-group-item"><strong>Subtotal:</strong> <?= number_format($order['subtotal'], 2) ?></li>
                 <li class="list-group-item"><strong>Tax Fee:</strong> <?= number_format($order['tax_fee'], 2) ?></li>
                 <li class="list-group-item"><strong>Total:</strong> <?= number_format($order['total'], 2) ?></li>
+                <li class="list-group-item"><strong>Phone:</strong> <?= htmlspecialchars($order['phone'] ?? '') ?></li>
+                <li class="list-group-item"><strong>Address:</strong> <?= htmlspecialchars($order['address'] ?? '') ?></li>
                 <li class="list-group-item"><strong>Note:</strong> <?= nl2br(htmlspecialchars($order['note'])) ?></li>
                 <li class="list-group-item"><strong>Created At:</strong> <?= $order['created_at'] ?></li>
             </ul>
