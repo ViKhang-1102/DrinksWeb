@@ -1,4 +1,5 @@
-Author Name: Huynh Vi Khang - BC00429 
+Author 
+Name: Huynh Vi Khang - BC00429 
 Place of work & study: BTEC FPT CAN THO 
 Project: Final Assignment - DrinksWeb
 
